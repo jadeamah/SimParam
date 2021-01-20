@@ -9,15 +9,15 @@ IVYAPPNAME = 'Sim Param'
 x = 0
 y = 0
 airport_select = 0
-fligh_plan_send = 0
 traj_team_ready = 0
             
-def leg_list(*arg):
-    global fligh_plan_send,airport_select
-    fligh_plan_send = 1
-    if(fligh_plan_send & airport_select):
+def change_traj_team_ready():
+    global traj_team_ready,airport_select
+    traj_team_ready = 1
+    if(traj_team_ready & airport_select):
         ex.activeBut()
 
+	
 def lprint(fmt, *arg):
     print(IVYAPPNAME + ': ' + fmt % arg)
 
@@ -70,13 +70,9 @@ if __name__ == "__main__":
             ondieproc)      # handler called when a <die> message is received
 
     # starting the bus
-    # Note: env variable IVYBUS will be used if no parameter or empty string
-    IvyBindMsg(leg_list,'^FL_LegList Time=(.*) LegList=(.*)') #FL_LegList Time=100 LegList=50
+
 
     # wait for TRAJ ready message
-    def change_traj_team_ready():
-        global traj_team_ready
-        traj_team_ready = 1
     IvyBindMsg(change_traj_team_ready, '^GT Traj_Ready')
 
     # is given ; this is performed by IvyStart (C)

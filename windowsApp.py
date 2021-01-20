@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QMessageBox, QComboBox, QHBoxLayout, QLabel,QLineEdit
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
-import mysql.connector
+from ivy.std_api import *
+import mysql.connector 
 from pyproj import Transformer
 
 class App(QWidget):
@@ -40,23 +41,23 @@ class App(QWidget):
 
         self.show()
 
-    def checkAirport(self, airport):
+    def checkAirport(self):
         global x, y, fligh_plan_send, airport_select
         try:
-            # TODO faire la connexion avec la BDD
-            mydb = mysql.connector.connect(
-                host="localhost",
-                user="user_nd",
-                password="nd",
-                database="jdbc:postgresql://localhost:5432/navDB"
-            )
+            
+            conn = mysql.connector.connect(database="navigationdisplay", 
+                        user="user_nd",
+                        host="localhost",
+                        password="nd") 
 
-            mycursor = mydb.cursor()
+            cur = conn.cursor()
             sql_select_query = """SELECT longitude, latitude from aeroport where identifiant=%s"""
-            mycursor.execute(sql_select_query, (airport,))
+            cur.execute(sql_select_query, (self.label.text(),))
 
-            myresult = mycursor.fetchall()
-
+            myresult = cur.fetchall()
+            conn.close()
+            
+            print(myresult)
             trans = Transformer.from_crs(
                 "epsg:4326",
                 "+proj=utm +zone=10 +ellps=WGS84",
