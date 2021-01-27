@@ -5,6 +5,10 @@ from ivy.std_api import *
 import mysql.connector 
 from pyproj import Transformer
 
+# Mercator projection used
+trans = Transformer.from_crs("epsg:4326", "+proj=merc +zone=32 +ellps=WGS84 +lat_ts=45", always_xy=True)
+NM2M = 1852
+
 class App(QWidget):
 
     def __init__(self):
@@ -56,14 +60,10 @@ class App(QWidget):
 
             myresult = cur.fetchall()
             conn.close()
-            
             print(myresult)
-            trans = Transformer.from_crs(
-                "epsg:4326",
-                "+proj=utm +zone=10 +ellps=WGS84",
-                always_xy=True,
-            )
-            x, y = trans.transform(myresult[0], myresult[0])
+
+            first_wpt = WayPoint(myresult[0], myresult[0])
+            x, y = first_wpt.x, first_wpt.y
             in_database = 1
 
         except mysql.connector.Error as error:
@@ -88,7 +88,7 @@ class App(QWidget):
     @pyqtSlot()
     def on_click(self):
         global x, y
-        msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " z=500.0 Vp=250.0 fpa=0.0 psi=0.0 phi=0.0"
+        msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " z=500.0 Vp=250.0 fpa=0.0 psi=0.0 phi=0.0" # +init_TRAJ_mes
         IvySendMsg(msg)
         self.desactiveBut()
         print("send")
@@ -103,3 +103,29 @@ class App(QWidget):
             event.accept()
         else:
             event.ignore()
+
+class WayPoint():
+    def __init__(self, lat, lon):
+        #self.lat, self.lon = lat, lon
+        self.lat, self.lon = self.string_to_float(lat, lon)
+        self.x, self.y = self.convert()
+
+    def string_to_float(self, lat, lon):
+        dir_lat, dir_lon = lat[0], lon[0]
+        lat, lon = lat[1:], lon[1:] # the first letter is removed
+        lat_float = float(lat[0:2]) + float(lat[2:4]) / 60 + float(lat[4:6]) / 3600
+        lon_float = float(lon[0:3]) + float(lon[3:5]) / 60 + float(lon[5:7]) / 3600
+
+        if dir_lat == "S":
+            lat = -lat
+        if dir_lon == "W":
+            lon = -lon
+
+        return lat_float, lon_float
+
+    def __repr__(self):
+        return "({0.x}, {0.y}, {0.lat}, {0.long})".format(self)
+
+    def convert(self):
+        y, x = trans.transform(self.lat, self.lon)
+        return x/NM2M, y/NM2M
