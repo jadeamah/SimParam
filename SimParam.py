@@ -6,20 +6,15 @@ from ivy.std_api import *
 from PyQt5.QtWidgets import QApplication
 
 IVYAPPNAME = 'Sim Param'
-x = 0
-y = 0
-airport_select = 0
-traj_team_ready = 0
-            
+
 def change_traj_team_ready(agent, *data):
-    global traj_team_ready,airport_select, init_TRAJ_mes
     init_TRAJ_mes = data[0]
     print("Message d'initialisation de TRAJ :", init_TRAJ_mes)
-    traj_team_ready = 1
-    if(traj_team_ready & airport_select):
-        ex.activeBut()
-
-	
+    ex.set_traj_team_ready()
+    
+    if(ex.get_airport_select() & ex.get_traj_team_ready()):
+    	ex.activeBut()
+        
 def lprint(fmt, *arg):
     print(IVYAPPNAME + ': ' + fmt % arg)
 

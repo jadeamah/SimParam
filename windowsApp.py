@@ -2,12 +2,17 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QMessageBox, QComboBox, QHBoxL
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from ivy.std_api import *
-import mysql.connector 
+import psycopg2 
 from pyproj import Transformer
 
 # Mercator projection used
 trans = Transformer.from_crs("epsg:4326", "+proj=merc +zone=32 +ellps=WGS84 +lat_ts=45", always_xy=True)
 NM2M = 1852
+
+x = 0
+y = 0
+airport_select = 0
+traj_team_ready = 0
 
 class App(QWidget):
 
@@ -46,36 +51,37 @@ class App(QWidget):
         self.show()
 
     def checkAirport(self):
-        global x, y, fligh_plan_send, airport_select
-        try:
+        global x, y, traj_team_ready, airport_select
+        self.conn = psycopg2.connect(database="navigationdisplay",
+                                user="user_nd",
+                                host="localhost",
+                                password="nd",
+                                port="5432")
+
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("""SELECT longitude, latitude from aeroport where identifiant='{}'""".format(self.label.text()))
+        rows = self.cursor.fetchall()
+
+        self.conn.close()
+        
+        
+        trans = Transformer.from_crs(
+            "epsg:4326",
+            "+proj=utm +zone=10 +ellps=WGS84",
+            always_xy=True,
+        )
+        
+        if rows != []:
+        	first_wpt = WayPoint(rows[0][0], rows[0][1])
+        	x, y = first_wpt.x, first_wpt.y
+        	self.label.setStyleSheet("color: green;")
+        	airport_select = 1
+        	IvySendMsg("SP_AptId Identifier={}".format(self.label.text()))
+        	if (traj_team_ready & airport_select):
+        	    self.activeBut()
             
-            conn = mysql.connector.connect(database="navigationdisplay", 
-                        user="user_nd",
-                        host="localhost",
-                        password="nd") 
-
-            cur = conn.cursor()
-            sql_select_query = """SELECT longitude, latitude from aeroport where identifiant=%s"""
-            cur.execute(sql_select_query, (self.label.text(),))
-
-            myresult = cur.fetchall()
-            conn.close()
-            print(myresult)
-
-            first_wpt = WayPoint(myresult[0], myresult[0])
-            x, y = first_wpt.x, first_wpt.y
-            in_database = 1
-
-        except mysql.connector.Error as error:
-            print("Failed to get record from MySQL table")
-            in_database = 0
-
-        if (in_database):
-            in_database = 1
-            self.label.setStyleSheet("color: green;")
-            if (fligh_plan_send & airport_select):
-                ex.activeBut()
-            print("ok")
+            #Envoi iD airport sur le bus ivy après verif
+            
         else:
             self.label.setStyleSheet("color: red;")
 
@@ -84,14 +90,27 @@ class App(QWidget):
 
     def desactiveBut(self):
         self.button.setEnabled(False)
+        
+    def get_traj_team_ready(self):
+        global traj_team_ready
+        return traj_team_ready
+        
+    def get_airport_select(self):
+        global airport_select
+        return airport_select
+        
+    def set_traj_team_ready(self):
+        global traj_team_ready
+        traj_team_ready =1
 
     @pyqtSlot()
     def on_click(self):
-        global x, y
+        global x, y, traj_team_ready, airport_select
         msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " z=500.0 Vp=250.0 fpa=0.0 psi=0.0 phi=0.0" # +init_TRAJ_mes
         IvySendMsg(msg)
         self.desactiveBut()
-        print("send")
+        airport_select = 0
+        traj_team_ready = 0
 
     def closeEvent(self, event):
         close = QMessageBox.question(self,
