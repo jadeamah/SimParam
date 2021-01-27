@@ -52,6 +52,7 @@ class App(QWidget):
 
     def checkAirport(self):
         global x, y, traj_team_ready, airport_select
+        id_airport = self.label.text()
         self.conn = psycopg2.connect(database="navigationdisplay",
                                 user="user_nd",
                                 host="localhost",
@@ -59,7 +60,7 @@ class App(QWidget):
                                 port="5432")
 
         self.cursor = self.conn.cursor()
-        self.cursor.execute("""SELECT longitude, latitude from aeroport where identifiant='{}'""".format(self.label.text()))
+        self.cursor.execute("""SELECT longitude, latitude from aeroport where identifiant='{}'""".format(id_airport))
         rows = self.cursor.fetchall()
 
         self.conn.close()
@@ -76,7 +77,8 @@ class App(QWidget):
         	x, y = first_wpt.x, first_wpt.y
         	self.label.setStyleSheet("color: green;")
         	airport_select = 1
-        	IvySendMsg("SP_AptId Identifier={}".format(self.label.text()))
+        	msg = "SP_AptId Identifier="+str(id_airport)
+        	IvySendMsg(msg)
         	if (traj_team_ready & airport_select):
         	    self.activeBut()
             
