@@ -60,7 +60,7 @@ class App(QWidget):
                                 port="5432")
 
         self.cursor = self.conn.cursor()
-        self.cursor.execute("""SELECT longitude, latitude from aeroport where identifiant='{}'""".format(id_airport))
+        self.cursor.execute("""SELECT latitude, longitude  from aeroport where identifiant='{}'""".format(id_airport))
         rows = self.cursor.fetchall()
 
         self.conn.close()
