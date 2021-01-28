@@ -80,6 +80,8 @@ class App(QWidget):
         	airport_select = 1
         	msg = "SP_AptId Identifier="+str(id_airport)
         	IvySendMsg(msg)
+            msg2 = "SP_InitialCoord Lat=" + rows[0][0] + " Lon=" +rows[0][1]
+            IvySendMsg(msg2)
         	if (traj_team_ready & airport_select):
         	    self.activeBut()
             
