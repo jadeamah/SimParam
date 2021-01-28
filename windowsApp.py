@@ -54,7 +54,7 @@ class App(QWidget):
     def checkAirport(self):
         global x, y, traj_team_ready, airport_select
         id_airport = self.label.text()
-        self.conn = psycopg2.connect(database="navigationdisplay",
+        self.conn = psycopg2.connect(database="navdb",
                                 user="user_nd",
                                 host="localhost",
                                 password="nd",
