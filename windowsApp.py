@@ -4,6 +4,7 @@ from PyQt5.QtCore import pyqtSlot
 from ivy.std_api import *
 import psycopg2 
 from pyproj import Transformer
+from SimParam import _init_TRAJ_mes
 
 # Mercator projection used
 trans = Transformer.from_crs("epsg:4326", "+proj=merc +zone=32 +ellps=WGS84 +lat_ts=45", always_xy=True)
@@ -108,7 +109,7 @@ class App(QWidget):
     @pyqtSlot()
     def on_click(self):
         global x, y, traj_team_ready, airport_select
-        msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " z=500.0 Vp=250.0 fpa=0.0 psi=0.0 phi=0.0" # +init_TRAJ_mes
+        msg = "InitStateVector x=" + str(x) + " y=" + str(y) + _init_TRAJ_mes
         IvySendMsg(msg)
         self.desactiveBut()
         airport_select = 0
