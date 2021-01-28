@@ -4,7 +4,8 @@ from PyQt5.QtCore import pyqtSlot
 from ivy.std_api import *
 import psycopg2 
 from pyproj import Transformer
-from SimParam import _init_TRAJ_mes
+
+_init_TRAJ_mes = ''
 
 # Mercator projection used
 trans = Transformer.from_crs("epsg:4326", "+proj=merc +zone=32 +ellps=WGS84 +lat_ts=45", always_xy=True)

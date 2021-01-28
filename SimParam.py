@@ -1,12 +1,11 @@
 import getopt
 import os
 import string
-from windowsApp import App
+from windowsApp import App, _init_TRAJ_mes
 from ivy.std_api import *
 from PyQt5.QtWidgets import QApplication
 
 IVYAPPNAME = 'Sim Param'
-_init_TRAJ_mes = ''
 
 def change_traj_team_ready(agent, *data):
     global _init_TRAJ_mes
