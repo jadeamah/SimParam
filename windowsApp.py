@@ -111,7 +111,7 @@ class App(QWidget):
 
     @pyqtSlot()
     def on_click(self):
-        global x, y, traj_team_ready, airport_select
+        global x, y, traj_team_ready, airport_select, _init_TRAJ_mes
         msg = "InitStateVector x=" + str(x) + " y=" + str(y) + _init_TRAJ_mes
         IvySendMsg(msg)
         self.desactiveBut()
