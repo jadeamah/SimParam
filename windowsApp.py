@@ -138,9 +138,9 @@ class WayPoint():
         lon_float = float(lon[0:3]) + float(lon[3:5]) / 60 + float(lon[5:7]) / 3600
 
         if dir_lat == "S":
-            lat = -lat
+            lat = -lat_float
         if dir_lon == "W":
-            lon = -lon
+            lon = -lon_float
 
         return lat_float, lon_float
 
