@@ -5,7 +5,8 @@ from ivy.std_api import *
 import psycopg2 
 from pyproj import Transformer
 
-_init_TRAJ_mes = ''
+
+_init_TRAJ_mes =""
 
 # Mercator projection used
 trans = Transformer.from_crs("epsg:4326", "+proj=merc +zone=32 +ellps=WGS84 +lat_ts=45", always_xy=True)
@@ -105,9 +106,10 @@ class App(QWidget):
         global airport_select
         return airport_select
         
-    def set_traj_team_ready(self):
-        global traj_team_ready
+    def set_traj_team_ready(self, init_TRAJ_mes):
+        global traj_team_ready, _init_TRAJ_mes
         traj_team_ready =1
+        _init_TRAJ_mes = init_TRAJ_mes
 
     @pyqtSlot()
     def on_click(self):

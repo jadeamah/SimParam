@@ -1,17 +1,18 @@
 import getopt
 import os
 import string
-from windowsApp import App, _init_TRAJ_mes
+from windowsApp import App
 from ivy.std_api import *
 from PyQt5.QtWidgets import QApplication
 
 IVYAPPNAME = 'Sim Param'
 
+
 def change_traj_team_ready(agent, *data):
     global _init_TRAJ_mes
     _init_TRAJ_mes = data[0]
     print("Message d'initialisation de TRAJ :", _init_TRAJ_mes)
-    ex.set_traj_team_ready()
+    ex.set_traj_team_ready(_init_TRAJ_mes)
     
     if(ex.get_airport_select() & ex.get_traj_team_ready()):
     	ex.activeBut()
@@ -72,6 +73,7 @@ if __name__ == "__main__":
 
     # wait for TRAJ ready message
     IvyBindMsg(change_traj_team_ready, '^GT Traj_Ready (.*)')
+    #GT Traj_Ready z=500 Vp=150 fpa=0 psi=140 phi=0
 
     # is given ; this is performed by IvyStart (C)
     IvyStart(sivybus)
