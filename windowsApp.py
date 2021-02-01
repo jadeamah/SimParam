@@ -115,6 +115,7 @@ class App(QWidget):
     def on_click(self):
         global x, y, traj_team_ready, airport_select, _init_TRAJ_mes
         msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " " + _init_TRAJ_mes
+        print(msg)
         IvySendMsg(msg)
         self.desactiveBut()
         airport_select = 0
