@@ -114,7 +114,7 @@ class App(QWidget):
     @pyqtSlot()
     def on_click(self):
         global x, y, traj_team_ready, airport_select, _init_TRAJ_mes
-        msg = "InitStateVector x=" + str(x) + " y=" + str(y) + " " + _init_TRAJ_mes
+        msg = "InitStateVector x=" + str(y*NM2M) + " y=" + str(x*NM2M) + " " + _init_TRAJ_mes
         print(msg)
         IvySendMsg(msg)
         self.desactiveBut()
@@ -155,5 +155,6 @@ class WayPoint():
         return "({0.x}, {0.y}, {0.lat}, {0.long})".format(self)
 
     def convert(self):
+        """transform retourne en mètre"""
         y, x = trans.transform(self.lat, self.lon)
         return x/NM2M, y/NM2M
